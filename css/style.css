@@ -1,0 +1,27 @@
+:root {
+    --primary-color: rgb(243 190 77);
+    --color-black: rgb(78 78 80);
+    --color-light-grey: rgb(108 117 125);
+}
+
+body {
+    font-family: "Ubuntu", sans-serif;
+}
+
+.navbar {
+    background-color: var(--primary-color);
+    color: var(--color-black);
+}
+
+.navbar-brand {
+    font-weight: 500;
+}
+
+.breadcrumb-item {
+    color: var(--color-light-grey);
+}
+
+.breadcrumb-item.active {
+    color: var(--color-black);
+    font-weight: 500;
+}
