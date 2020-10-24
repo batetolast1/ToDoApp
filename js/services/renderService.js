@@ -13,15 +13,17 @@ class RenderService {
         this.taskAddingForm.addEventListener("submit", event => {
             event.preventDefault();
 
-            let title = event.target.elements.title.value;
-            let description = event.target.elements.description.value;
-            let newTask = new Task(title, description, "open", new Date());
+            if (event.target.elements.title.value !== "") {
+                let title = event.target.elements.title.value;
+                let description = event.target.elements.description.value;
+                let newTask = new Task(title, description, "open", new Date());
 
-            this.apiService.saveTask(newTask)
-                .then(savedTask => this.renderTask(savedTask));
+                this.apiService.saveTask(newTask)
+                    .then(savedTask => this.renderTask(savedTask));
 
-            event.target.elements.title.value = "";
-            event.target.elements.description.value = "";
+                event.target.elements.title.value = "";
+                event.target.elements.description.value = "";
+            }
         });
     }
 
@@ -43,14 +45,20 @@ class RenderService {
         const headerLeftDiv = document.createElement("div");
         headerDiv.appendChild(headerLeftDiv);
 
+        const h4 = document.createElement("h4");
+        h4.innerText = task.title;
+        headerLeftDiv.appendChild(h4);
+
         const h5 = document.createElement("h5");
-        h5.innerText = task.title;
+        h5.className = "card-subtitle text-muted";
+        h5.innerText = task.description;
         headerLeftDiv.appendChild(h5);
 
-        const h6 = document.createElement("h6");
-        h6.className = "card-subtitle text-muted";
-        h6.innerText = task.description;
-        headerLeftDiv.appendChild(h6);
+        const taskAddedDate = new Date(task.addedDate);
+        const p = document.createElement("p");
+        p.className = "card-subtitle text-muted mt-1";
+        p.innerText = "Created: " + taskAddedDate.toUTCString();
+        headerLeftDiv.appendChild(p);
 
         const headerRightDiv = document.createElement("div");
         headerDiv.appendChild(headerRightDiv);
@@ -121,12 +129,14 @@ class RenderService {
             form.addEventListener("submit", (event) => {
                 event.preventDefault();
 
-                let newOperation = new Operation(descriptionInput.value, 0, new Date());
+                if (descriptionInput.value !== "") {
+                    let newOperation = new Operation(descriptionInput.value, 0, new Date());
 
-                this.apiService.saveOperation(task, newOperation)
-                    .then(savedOperation => this.renderOperation(ul, task, savedOperation));
+                    this.apiService.saveOperation(task, newOperation)
+                        .then(savedOperation => this.renderOperation(ul, task, savedOperation));
 
-                descriptionInput.value = "";
+                    descriptionInput.value = "";
+                }
             });
         }
     }
@@ -142,7 +152,7 @@ class RenderService {
         li.className = "list-group-item d-flex justify-content-between align-items-center";
         ul.appendChild(li);
 
-        const descriptionDiv = document.createElement("div");
+        const descriptionDiv = document.createElement("h6");
         descriptionDiv.innerText = operation.description;
         li.appendChild(descriptionDiv);
 
@@ -156,6 +166,23 @@ class RenderService {
             const controlDiv = document.createElement("div");
             controlDiv.className = "js-task-open-only";
             li.appendChild(controlDiv);
+
+            const add1minButton = document.createElement("button");
+            add1minButton.className = "btn btn-outline-success btn-sm mr-2";
+            add1minButton.innerText = "+1m";
+            controlDiv.appendChild(add1minButton);
+
+            // add event to increase operation time +1min
+            add1minButton.addEventListener("click", () => {
+                operation.timeSpent += 1;
+
+                this.apiService.updateOperation(operation)
+                    .then(updatedOperation => {
+                            operation = updatedOperation;
+                            time.innerText = this.formatTime(operation.timeSpent);
+                        }
+                    );
+            });
 
             const add15minButton = document.createElement("button");
             add15minButton.className = "btn btn-outline-success btn-sm mr-2";
@@ -182,6 +209,23 @@ class RenderService {
             // add event to increase operation time +1h
             add1hButton.addEventListener("click", () => {
                 operation.timeSpent += 60;
+
+                this.apiService.updateOperation(operation)
+                    .then(updatedOperation => {
+                            operation = updatedOperation;
+                            time.innerText = this.formatTime(operation.timeSpent);
+                        }
+                    );
+            });
+
+            const resetTimeButton = document.createElement("button");
+            resetTimeButton.className = "btn btn-outline-success btn-sm mr-2";
+            resetTimeButton.innerText = "Reset time";
+            controlDiv.appendChild(resetTimeButton);
+
+            // add event to reset time to 0
+            resetTimeButton.addEventListener("click", () => {
+                operation.timeSpent = 0;
 
                 this.apiService.updateOperation(operation)
                     .then(updatedOperation => {
