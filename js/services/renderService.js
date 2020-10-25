@@ -170,6 +170,7 @@ class RenderService {
         li.appendChild(controlDiv);
 
         // create elements to modify operation's data for opened task
+        // operation is considered as 'finished' when timeSpent = -1
         if (task.status === "open" && operation.timeSpent !== -1) {
             const add1minButton = document.createElement("button");
             add1minButton.className = "btn btn-outline-success btn-sm mr-2 js-operation-open-only";
@@ -178,7 +179,9 @@ class RenderService {
 
             // add event to increase operation time +1min
             add1minButton.addEventListener("click", () => {
-                operation.timeSpent += 1;
+                countdownButton.removeAttribute("disabled");
+
+                operation.timeSpent += (1 * 60);
 
                 this.apiService.updateOperation(operation)
                     .then(updatedOperation => {
@@ -195,7 +198,9 @@ class RenderService {
 
             // add event to increase operation time +15min
             add15minButton.addEventListener("click", () => {
-                operation.timeSpent += 15;
+                countdownButton.removeAttribute("disabled");
+
+                operation.timeSpent += (15 * 60);
 
                 this.apiService.updateOperation(operation)
                     .then(updatedOperation => {
@@ -212,7 +217,9 @@ class RenderService {
 
             // add event to increase operation time +1h
             add1hButton.addEventListener("click", () => {
-                operation.timeSpent += 60;
+                countdownButton.removeAttribute("disabled");
+
+                operation.timeSpent += (60 * 60);
 
                 this.apiService.updateOperation(operation)
                     .then(updatedOperation => {
@@ -229,6 +236,8 @@ class RenderService {
 
             // add event to reset time to 0
             resetTimeButton.addEventListener("click", () => {
+                countdownButton.setAttribute("disabled", "true");
+
                 operation.timeSpent = 0;
 
                 this.apiService.updateOperation(operation)
@@ -239,12 +248,77 @@ class RenderService {
                     );
             });
 
+            const countdownButton = document.createElement("button");
+            countdownButton.className = "btn btn-primary btn-sm mr-2 js-operation-open-only";
+            if (operation.timeSpent === 0) {
+                countdownButton.setAttribute("disabled", "true");
+            }
+            countdownButton.innerText = "Start countdown";
+            controlDiv.appendChild(countdownButton);
+
+            // add event to remove all DOM elements except name and time for all operations of given task
+            countdownButton.addEventListener("click", () => {
+                controlDiv.classList.add("d-none");
+
+                let remainingTime = operation.timeSpent;
+                let timer = setInterval(() => {
+                    let hours = Math.floor(remainingTime / (60 * 60));
+                    let minutes = Math.floor((remainingTime / 60) % 60);
+                    let seconds = remainingTime % 60;
+
+                    time.innerText = hours + "h " + minutes + "m " + seconds + "s";
+
+                    if (remainingTime > 0) {
+                        remainingTime -= 1;
+                    } else {
+                        clearInterval(timer);
+
+                        time.innerText = 'Operation finished!';
+
+                        operation.timeSpent = "-1";
+
+                        this.apiService.updateOperation(operation)
+                            .then(() => {
+                                countdownDiv.parentElement.removeChild(countdownDiv);
+                                controlDiv.classList.remove("d-none");
+                                li.querySelectorAll(".js-operation-open-only")
+                                    .forEach(element => element.parentElement.removeChild(element));
+                            });
+                    }
+                }, 10);
+
+                const countdownDiv = document.createElement("div");
+                countdownDiv.className = "js-task-open-only";
+                li.appendChild(countdownDiv);
+
+                const pauseButton = document.createElement("button");
+                pauseButton.className = "btn btn-outline-danger btn-sm";
+                pauseButton.innerText = "Pause countdown";
+                countdownDiv.appendChild(pauseButton);
+
+                pauseButton.addEventListener("click", () => {
+                    clearInterval(timer);
+
+                    countdownDiv.parentElement.removeChild(countdownDiv);
+                    controlDiv.classList.remove("d-none");
+
+                    operation.timeSpent = remainingTime;
+
+                    this.apiService.updateOperation(operation)
+                        .then(updatedOperation => {
+                                operation = updatedOperation;
+                                time.innerText = this.formatTime(operation.timeSpent);
+                            }
+                        );
+                });
+            });
+
             const finishButton = document.createElement("button");
             finishButton.className = "btn btn-dark btn-sm mr-2 js-operation-open-only";
             finishButton.innerText = "Finish";
             controlDiv.appendChild(finishButton);
 
-            // add event to remove all DOM elements except name and time for all operations of given task
+            // add event to remove all DOM elements except name from operation
             finishButton.addEventListener("click", () => {
                 time.innerText = 'Operation finished!';
 
@@ -269,8 +343,9 @@ class RenderService {
     }
 
     formatTime(timeSpent) {
-        const hours = Math.floor(timeSpent / 60);
-        const minutes = timeSpent % 60;
-        return hours > 0 ? hours + "h " + minutes + "m" : minutes + "m";
+        const hours = Math.floor(timeSpent / (60 * 60));
+        const minutes = Math.floor((timeSpent / 60) % 60);
+        const seconds = timeSpent % 60;
+        return hours + "h " + minutes + "m " + seconds + "s";
     }
 }

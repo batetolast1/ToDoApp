@@ -9,7 +9,14 @@ Personal key must be sent in header ("Authorization": "API_KEY") for each reques
 
 # Content
 What you can do:
+- add/finish/delete tasks
+- add new operation to task
+- finish/delete operation
+- add time to operation
+- start countdown of operation
 
+
+# ToDoApp API 
 |      Address     |      Method     |      Description      | Data structure |
 |----------------|-----------------|----------------|-----------------------------|
 | `/api/tasks`   |    GET          | Getting all tasks  |  |
