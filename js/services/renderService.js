@@ -158,17 +158,21 @@ class RenderService {
 
         const time = document.createElement("span");
         time.className = "badge badge-success badge-pill ml-2";
-        time.innerText = this.formatTime(operation.timeSpent);
+        if (operation.timeSpent !== -1) {
+            time.innerText = this.formatTime(operation.timeSpent);
+        } else {
+            time.innerText = 'Operation finished!';
+        }
         descriptionDiv.appendChild(time);
 
-        // create elements to modify operation's data for opened task
-        if (task.status === "open") {
-            const controlDiv = document.createElement("div");
-            controlDiv.className = "js-task-open-only";
-            li.appendChild(controlDiv);
+        const controlDiv = document.createElement("div");
+        controlDiv.className = "js-task-open-only";
+        li.appendChild(controlDiv);
 
+        // create elements to modify operation's data for opened task
+        if (task.status === "open" && operation.timeSpent !== -1) {
             const add1minButton = document.createElement("button");
-            add1minButton.className = "btn btn-outline-success btn-sm mr-2";
+            add1minButton.className = "btn btn-outline-success btn-sm mr-2 js-operation-open-only";
             add1minButton.innerText = "+1m";
             controlDiv.appendChild(add1minButton);
 
@@ -185,7 +189,7 @@ class RenderService {
             });
 
             const add15minButton = document.createElement("button");
-            add15minButton.className = "btn btn-outline-success btn-sm mr-2";
+            add15minButton.className = "btn btn-outline-success btn-sm mr-2 js-operation-open-only";
             add15minButton.innerText = "+15m";
             controlDiv.appendChild(add15minButton);
 
@@ -202,7 +206,7 @@ class RenderService {
             });
 
             const add1hButton = document.createElement("button");
-            add1hButton.className = "btn btn-outline-success btn-sm mr-2";
+            add1hButton.className = "btn btn-outline-success btn-sm mr-2 js-operation-open-only";
             add1hButton.innerText = "+1h";
             controlDiv.appendChild(add1hButton);
 
@@ -219,7 +223,7 @@ class RenderService {
             });
 
             const resetTimeButton = document.createElement("button");
-            resetTimeButton.className = "btn btn-outline-success btn-sm mr-2";
+            resetTimeButton.className = "btn btn-outline-success btn-sm mr-2 js-operation-open-only";
             resetTimeButton.innerText = "Reset time";
             controlDiv.appendChild(resetTimeButton);
 
@@ -235,17 +239,33 @@ class RenderService {
                     );
             });
 
-            const deleteButton = document.createElement("button");
-            deleteButton.className = "btn btn-outline-danger btn-sm";
-            deleteButton.innerText = "Delete";
-            controlDiv.appendChild(deleteButton);
+            const finishButton = document.createElement("button");
+            finishButton.className = "btn btn-dark btn-sm mr-2 js-operation-open-only";
+            finishButton.innerText = "Finish";
+            controlDiv.appendChild(finishButton);
 
-            // add event to delete operation
-            deleteButton.addEventListener("click", () => {
-                this.apiService.deleteOperation(operation)
-                    .then(() => li.parentElement.removeChild(li));
+            // add event to remove all DOM elements except name and time for all operations of given task
+            finishButton.addEventListener("click", () => {
+                time.innerText = 'Operation finished!';
+
+                operation.timeSpent = "-1";
+
+                this.apiService.updateOperation(operation)
+                    .then(() => li.querySelectorAll(".js-operation-open-only")
+                        .forEach(element => element.parentElement.removeChild(element)));
             });
         }
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "btn btn-outline-danger btn-sm";
+        deleteButton.innerText = "Delete";
+        controlDiv.appendChild(deleteButton);
+
+        // add event to delete operation
+        deleteButton.addEventListener("click", () => {
+            this.apiService.deleteOperation(operation)
+                .then(() => li.parentElement.removeChild(li));
+        });
     }
 
     formatTime(timeSpent) {
