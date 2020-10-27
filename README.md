@@ -15,6 +15,10 @@ What you can do:
 - add time to operation
 - start countdown of operation
 
+# Main Page
+
+![ToDo-App with TimeTracker main page](ToDo-App-with-TimeTracker.jpg)
+
 # ToDoApp API 
 |      Address     |      Method     |      Description      | Data structure |
 |----------------|-----------------|----------------|-----------------------------|
