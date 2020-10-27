@@ -33,17 +33,50 @@
         </ul>
     </header>
 
+    <main id="app" class="js-tasks-list container mb-5">
+
+        <div class="card shadow">
+            <div class="card-header">
+                <h1 class="card-title">Add new task</h1>
+                <h5 class="card-subtitle text-muted">Enter title and description below</h5>
+            </div>
+            <div class="card-body">
+                <form class="js-task-adding-form text-right">
+                    <div class="form-group">
+                        <input type="text"
+                               class="form-control shadow"
+                               name="title"
+                               placeholder="Title"
+                               minlength="5"
+                               required/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text"
+                               class="form-control shadow"
+                               name="description"
+                               placeholder="Description"
+                               minlength="5"
+                               required/>
+                    </div>
+                    <button type="submit" class="btn btn-info">Add task<i class="fas fa-plus-circle ml-1"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
     <div class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Modal title</h4>
+                    <h4 class="modal-title"></h4>
                     <button class="modal-close close">
                         <span>&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p class="modal-description">Modal description</p>
+                    <p class="modal-description"></p>
                 </div>
                 <div class="modal-footer">
                     <button class="modal-close btn btn-dark">Close</button>
@@ -53,150 +86,5 @@
     </div>
     <div class="modal-backdrop fade show" style="display: none;"></div>
 
-    <main id="app" class="js-tasks-list container mb-5">
-
-        <div class="card shadow">
-            <div class="card-body">
-                <h1 class="card-title">New task</h1>
-                <form class="js-task-adding-form">
-                    <div class="form-group">
-                        <input type="text"
-                               class="form-control"
-                               name="title"
-                               placeholder="Title"
-                               minlength="5"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text"
-                               class="form-control"
-                               name="description"
-                               placeholder="Description"
-                               minlength="5"/>
-                    </div>
-                    <button class="btn btn-info">
-                        Add task
-                        <i class="fas fa-plus-circle ml-1"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!--
-
-        <section class="card mt-5 shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <h4>Example of open task</h4>
-                    <h5 class="card-subtitle text-muted">You can add new operations, finish or delete task</h5>
-                    <p class="card-subtitle text-muted mt-1">Created: Wed, 21 Oct 2020 13:50:20 GMT</p>
-                </div>
-                <div>
-                    <button class="btn btn-dark btn-sm">Finish</button>
-                    <button class="btn btn-outline-danger btn-sm ml-2">Delete</button>
-                </div>
-            </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        In open task you can add time to existing operations
-                        <span class="badge badge-success badge-pill ml-2">2h 0m</span>
-                    </div>
-                    <div>
-                        <button class="btn btn-outline-success btn-sm mr-2">+1m</button>
-                        <button class="btn btn-outline-success btn-sm mr-2">+15m</button>
-                        <button class="btn btn-outline-success btn-sm mr-2">+1h</button>
-                        <button class="btn btn-outline-success btn-sm mr-2">Reset time</button>
-                        <button class="btn btn-outline-danger btn-sm">Delete</button>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        In open task you can delete operations too
-                        <span class="badge badge-success badge-pill ml-2">15m</span>
-                    </div>
-                    <div>
-                        <button class="btn btn-outline-success btn-sm mr-2">+1m</button>
-                        <button class="btn btn-outline-success btn-sm mr-2">+15m</button>
-                        <button class="btn btn-outline-success btn-sm mr-2">+1h</button>
-                        <button class="btn btn-outline-success btn-sm mr-2">Reset time</button>
-                        <button class="btn btn-outline-danger btn-sm">Delete</button>
-                    </div>
-                </li>
-            </ul>
-            <div class="card-body">
-                <form>
-                    <div class="input-group">
-                        <input type="text" placeholder="Operation description" class="form-control" minlength="5">
-                        <div class="input-group-append">
-                            <button class="btn btn-info">Add</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <section class="card mt-5 shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <h4>Example of closed task</h4>
-                    <h5 class="card-subtitle text-muted">You can only delete closed task</h5>
-                    <p class="card-subtitle text-muted mt-1">Created: Wed, 21 Oct 2020 13:50:20 GMT</p>
-                </div>
-                <div>
-                    <button class="btn btn-outline-danger btn-sm ml-2">Delete</button>
-                </div>
-            </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        You can't add time to operation in closed task
-                        <span class="badge badge-success badge-pill ml-2">2h 0m</span>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        You can't delete operation in closed task
-                        <span class="badge badge-success badge-pill ml-2">15m</span>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        You can't add new operations to closed task
-                        <span class="badge badge-success badge-pill ml-2">0m</span>
-                    </div>
-                </li>
-            </ul>
-        </section>
-
-        <section class="card mt-5 shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <h4>Example of closed task without operations</h4>
-                    <h5 class="card-subtitle text-muted">Task without any operations looks just like this
-                        (or when it's operations haven't been loaded yet)</h5>
-                    <p class="card-subtitle text-muted mt-1">Created: Wed, 21 Oct 2020 13:50:20 GMT</p>
-                </div>
-                <div>
-                    <button class="btn btn-dark btn-sm">Finish</button>
-                    <button class="btn btn-outline-danger btn-sm ml-2">Delete</button>
-                </div>
-            </div>
-            <ul class="list-group list-group-flush">
-            </ul>
-            <div class="card-body">
-                <form>
-                    <div class="input-group">
-                        <input type="text" placeholder="Operation description" class="form-control" minlength="5">
-                        <div class="input-group-append">
-                            <button class="btn btn-info">Add</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        -->
-
-    </main>
 </body>
 </html>

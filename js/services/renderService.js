@@ -53,6 +53,7 @@ class RenderService {
         headerDiv.appendChild(headerLeftDiv);
 
         const h4 = document.createElement("h4");
+        h4.className = "card-title";
         h4.innerText = task.title;
         headerLeftDiv.appendChild(h4);
 
@@ -63,7 +64,7 @@ class RenderService {
 
         const taskAddedDate = new Date(task.addedDate);
         const p = document.createElement("p");
-        p.className = "card-subtitle text-muted mt-1";
+        p.className = "card-text text-muted mt-1";
         p.innerText = "Created: " + taskAddedDate.toUTCString();
         headerLeftDiv.appendChild(p);
 
@@ -72,6 +73,104 @@ class RenderService {
 
         // create finish buton only for opened tasks
         if (task.status === "open") {
+            const editButton = document.createElement("button");
+            editButton.className = "btn btn-secondary btn-sm js-task-open-only mr-2";
+            editButton.innerText = "Edit";
+            headerRightDiv.appendChild(editButton);
+
+            editButton.addEventListener("click", () => {
+                headerLeftDiv.classList.add("d-none");
+                headerRightDiv.classList.add("d-none");
+
+                const editTaskDiv = document.createElement("div");
+                editTaskDiv.className = "card-body";
+                headerDiv.appendChild(editTaskDiv);
+
+                const editH4 = document.createElement("h4");
+                editH4.className = "card-title";
+                editH4.innerText = "Edit task";
+                editTaskDiv.appendChild(editH4);
+
+                const form = document.createElement("form");
+                form.className = "text-right";
+                editTaskDiv.appendChild(form);
+
+                const titleFormGroup = document.createElement("div");
+                titleFormGroup.className = "form-group";
+                form.appendChild(titleFormGroup);
+
+                const titleInput = document.createElement("input");
+                titleInput.setAttribute("type", "text");
+                titleInput.setAttribute("placeholder", "Operation description");
+                titleInput.setAttribute("minlength", "5");
+                titleInput.setAttribute("value", task.title);
+                titleInput.className = "form-control shadow";
+                titleInput.required = true;
+                titleFormGroup.appendChild(titleInput);
+
+                const descriptionFormGroup = document.createElement("div");
+                descriptionFormGroup.className = "form-group";
+                form.appendChild(descriptionFormGroup);
+
+                const descriptionInput = document.createElement("input");
+                descriptionInput.setAttribute("type", "text");
+                descriptionInput.setAttribute("placeholder", "Operation description");
+                descriptionInput.setAttribute("minlength", "5");
+                descriptionInput.setAttribute("value", task.description);
+                descriptionInput.className = "form-control shadow";
+                descriptionInput.required = true;
+                descriptionFormGroup.appendChild(descriptionInput);
+
+                const cancelButton = document.createElement("button");
+                cancelButton.className = "btn btn-warning mr-2";
+                cancelButton.type = "button";
+                cancelButton.innerText = "Cancel";
+                form.appendChild(cancelButton);
+
+                const cancelSign = document.createElement("i");
+                cancelSign.className = "fas fa-undo ml-1";
+                cancelButton.appendChild(cancelSign);
+
+                cancelButton.addEventListener("click", () => {
+                    headerLeftDiv.classList.remove("d-none");
+                    headerRightDiv.classList.remove("d-none");
+
+                    editTaskDiv.parentElement.removeChild(editTaskDiv);
+                });
+
+                const updateButton = document.createElement("button");
+                updateButton.className = "btn btn-info";
+                updateButton.type = "submit";
+                updateButton.innerText = "Update task";
+                form.appendChild(updateButton);
+
+                const checkSign = document.createElement("i");
+                checkSign.className = "fas fa-check ml-1";
+                updateButton.appendChild(checkSign);
+
+                // add event to form to update operation description
+                form.addEventListener("submit", event => {
+                    event.preventDefault();
+
+                    if (titleInput.value !== "" && descriptionInput.value !== "") {
+                        task.title = titleInput.value;
+                        task.description = descriptionInput.value;
+
+                        this.apiService.updateTask(task)
+                            .then(updatedTask => {
+                                task = updatedTask;
+
+                                h4.innerText = task.title;
+                                h5.innerText = task.description;
+
+                                headerLeftDiv.classList.remove("d-none");
+                                headerRightDiv.classList.remove("d-none");
+                                editTaskDiv.parentElement.removeChild(editTaskDiv);
+                            });
+                    }
+                });
+            });
+
             const finishButton = document.createElement("button");
             finishButton.className = "btn btn-dark btn-sm js-task-open-only";
             finishButton.innerText = "Finish";
@@ -120,7 +219,8 @@ class RenderService {
             descriptionInput.setAttribute("type", "text");
             descriptionInput.setAttribute("placeholder", "Operation description");
             descriptionInput.setAttribute("minlength", "5");
-            descriptionInput.className = "form-control";
+            descriptionInput.className = "form-control shadow";
+            descriptionInput.required = true;
             inputGroup.appendChild(descriptionInput);
 
             const inputGroupAppend = document.createElement("div");
@@ -129,11 +229,16 @@ class RenderService {
 
             const addButton = document.createElement("button");
             addButton.className = "btn btn-info";
-            addButton.innerText = "Add";
+            addButton.type = "submit";
+            addButton.innerText = "Add operation";
             inputGroupAppend.appendChild(addButton);
 
+            const plusSign = document.createElement("i");
+            plusSign.className = "fas fa-plus-circle ml-1";
+            addButton.appendChild(plusSign);
+
             // add event to form to create and render new operation
-            form.addEventListener("submit", (event) => {
+            form.addEventListener("submit", event => {
                 event.preventDefault();
 
                 if (descriptionInput.value !== "") {
@@ -159,9 +264,12 @@ class RenderService {
         li.className = "list-group-item d-flex justify-content-between align-items-center";
         ul.appendChild(li);
 
-        const descriptionDiv = document.createElement("h6");
-        descriptionDiv.innerText = operation.description;
+        const descriptionDiv = document.createElement("div");
         li.appendChild(descriptionDiv);
+
+        const h6 = document.createElement("h6");
+        h6.innerText = operation.description;
+        descriptionDiv.appendChild(h6);
 
         const time = document.createElement("span");
         time.className = "badge badge-success badge-pill ml-2";
@@ -170,7 +278,7 @@ class RenderService {
         } else {
             time.innerText = 'Operation finished!';
         }
-        descriptionDiv.appendChild(time);
+        h6.appendChild(time);
 
         const controlDiv = document.createElement("div");
         controlDiv.className = "js-task-open-only";
@@ -188,7 +296,7 @@ class RenderService {
             add1minButton.addEventListener("click", () => {
                 countdownButton.removeAttribute("disabled");
 
-                operation.timeSpent += (1 * 60);
+                operation.timeSpent += 60;
 
                 this.apiService.updateOperation(operation)
                     .then(updatedOperation => {
@@ -321,6 +429,88 @@ class RenderService {
                                 time.innerText = this.formatTime(operation.timeSpent);
                             }
                         );
+                });
+            });
+
+            const editButton = document.createElement("button");
+            editButton.className = "btn btn-secondary btn-sm mr-2 js-operation-open-only";
+            editButton.innerText = "Edit";
+            controlDiv.appendChild(editButton);
+
+            editButton.addEventListener("click", () => {
+                descriptionDiv.classList.add("d-none");
+                controlDiv.classList.add("d-none");
+
+                const editOperationDiv = document.createElement("div");
+                editOperationDiv.className = "w-100 shadow";
+                li.appendChild(editOperationDiv);
+
+                const form = document.createElement("form");
+                editOperationDiv.appendChild(form);
+
+                const inputGroup = document.createElement("div");
+                inputGroup.className = "input-group";
+                form.appendChild(inputGroup);
+
+                const descriptionInput = document.createElement("input");
+                descriptionInput.setAttribute("type", "text");
+                descriptionInput.setAttribute("placeholder", "Operation description");
+                descriptionInput.setAttribute("minlength", "5");
+                descriptionInput.setAttribute("value", operation.description);
+                descriptionInput.className = "form-control shadow";
+                descriptionInput.required = true;
+                inputGroup.appendChild(descriptionInput);
+
+                const inputGroupAppend = document.createElement("div");
+                inputGroupAppend.className = "input-group-append";
+                inputGroup.appendChild(inputGroupAppend);
+
+                const cancelButton = document.createElement("button");
+                cancelButton.className = "btn btn-warning btn-sm mr-2";
+                cancelButton.type = "button";
+                cancelButton.innerText = "Cancel";
+                inputGroupAppend.appendChild(cancelButton);
+
+                const cancelSign = document.createElement("i");
+                cancelSign.className = "fas fa-undo ml-1";
+                cancelButton.appendChild(cancelSign);
+
+                cancelButton.addEventListener("click", () => {
+                    descriptionDiv.classList.remove("d-none");
+                    controlDiv.classList.remove("d-none");
+
+                    editOperationDiv.parentElement.removeChild(editOperationDiv);
+                });
+
+                const updateButton = document.createElement("button");
+                updateButton.className = "btn btn-info btn-sm";
+                updateButton.type = "submit";
+                updateButton.innerText = "Update operation";
+                inputGroupAppend.appendChild(updateButton);
+
+                const checkSign = document.createElement("i");
+                checkSign.className = "fas fa-check ml-1";
+                updateButton.appendChild(checkSign);
+
+                // add event to form to update operation description
+                form.addEventListener("submit", event => {
+                    event.preventDefault();
+
+                    if (descriptionInput.value !== "") {
+                        operation.description = descriptionInput.value;
+
+                        this.apiService.updateOperation(operation)
+                            .then(updatedOperation => {
+                                operation = updatedOperation;
+
+                                h6.innerText = operation.description;
+                                h6.appendChild(time);
+
+                                descriptionDiv.classList.remove("d-none");
+                                controlDiv.classList.remove("d-none");
+                                editOperationDiv.parentElement.removeChild(editOperationDiv);
+                            });
+                    }
                 });
             });
 

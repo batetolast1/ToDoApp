@@ -1,20 +1,19 @@
 # ToDoApp
-This app allows users to manage tasks and operations that are stored on remote server. Data between user and DB is transferred in JSONs using REST API with simple CRUD support (GET, PUT, POST, DELETE).
+This app allows users to manage tasks and operations that are stored on a remote server. Data between user and DB is transferred in JSONs using REST API with simple CRUD support (GET, PUT, POST, DELETE).
 
 Access to API: https://todo-api.coderslab.pl
 
 In order to use API user needs to generate personal key that can be obtained on: https://todo-api.coderslab.pl/apikey/create
 
-Personal key must be sent in header ("Authorization": "API_KEY") for each request.
+Personal key must be sent in the header ("Authorization": "API_KEY") for each request.
 
 # Content
 What you can do:
-- add/finish/delete tasks
+- add/finish/edit/delete tasks
 - add new operation to task
-- finish/delete operation
+- finish/edit/delete operation
 - add time to operation
 - start countdown of operation
-
 
 # ToDoApp API 
 |      Address     |      Method     |      Description      | Data structure |
